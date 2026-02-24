@@ -1,0 +1,16 @@
+[20:57:11] [QUERY] Done in 94.57s - Groq/llama-3.1-8b-instant - q_type=summarisation
+[20:57:11] [SYNTHESISE] OK Groq/llama-3.1-8b-instant - 4554 chars (94.48s)
+[20:57:11] [GROQ] OK 2.31s - 4554 chars
+[20:57:08] [ANSWER] Ollama failed (Ollama: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=90)), trying Groq...
+[20:57:08] [OLLAMA] FAIL HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=90)
+[20:55:36] [RETRIEVE] OK 3 chunk(s), 1402 chars (0.017s)
+[20:55:36] [CLASSIFY] Q: 'Describe this image in full detail — all components, labels,' -> summarisation (0.0007s)
+[20:55:36] [GROQ_VISION] OK 8.24s - 3333 chars (attempt 1)
+[20:49:07] [QUERY] Done in 94.77s - Groq/llama-3.1-8b-instant - q_type=summarisation
+[20:49:07] [SYNTHESISE] OK Groq/llama-3.1-8b-instant - 3159 chars (94.48s)
+[20:49:07] [GROQ] OK 2.18s - 3159 chars
+[20:49:05] [ANSWER] Ollama failed (Ollama: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=90)), trying Groq...
+[20:49:05] [OLLAMA] FAIL HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=90)
+[20:47:32] [RETRIEVE] OK 3 chunk(s), 1274 chars (0.009s)
+[20:47:32] [CLASSIFY] Q: 'Describe this image in full detail — all components, labels,' -> summarisation (0.0s)
+[20:47:32] [GROQ_VISION] OK 13.35s - 3208 chars (attempt 1)

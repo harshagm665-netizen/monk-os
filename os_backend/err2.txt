@@ -1,0 +1,10 @@
+﻿.\venv\Scripts\python.exe :   File "routers\rag.py", line 1
+At line:1 char:1
++ .\venv\Scripts\python.exe -W ignore -m py_compile routers\rag.py 2>&1 ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo              : NotSpeci    fied: (  File "ro    uters\rag.py", li    ne 1:String) [],     RemoteException
+    + FullyQualifiedE    rrorId : NativeCo    mmandError
+ 
+    """
+    ^
+SyntaxError: unterminated triple-quoted string literal (detected at line 514)

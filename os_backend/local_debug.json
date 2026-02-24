@@ -1,0 +1,354 @@
+{
+  "curriculum": {
+    "topics": [
+      {
+        "concept": "The Solar System",
+        "questions": [
+          {
+            "question": "What is the solar system made of?",
+            "options": [
+              "Stars",
+              "Planets",
+              "Moons",
+              "Comets"
+            ],
+            "correct_index": 1
+          },
+          {
+            "question": "How many planets are in the solar system?",
+            "options": [
+              "5",
+              "10",
+              "20",
+              "More than 20"
+            ],
+            "correct_index": 3
+          },
+          {
+            "question": "What is the big planet in our solar system?",
+            "options": [
+              "Earth",
+              "Mars",
+              "Jupiter",
+              "Saturn"
+            ],
+            "correct_index": 2
+          },
+          {
+            "question": "What is the sun's role in the solar system?",
+            "options": [
+              "It orbits the Earth",
+              "It orbits the Moon",
+              "It gives light and heat to the planets",
+              "It is a planet"
+            ],
+            "correct_index": 2
+          },
+          {
+            "question": "What is the solar system made of, besides planets?",
+            "options": [
+              "Stars and moons",
+              "Stars and comets",
+              "Moons and comets",
+              "None"
+            ],
+            "correct_index": 0
+          },
+          {
+            "question": "What is the solar system?",
+            "options": [
+              "A group of stars",
+              "A group of planets",
+              "A group of moons",
+              "A group of comets"
+            ],
+            "correct_index": 1
+          },
+          {
+            "question": "What is the sun's size compared to the planets?",
+            "options": [
+              "Smaller than the planets",
+              "Larger than the planets",
+              "The same size as the planets",
+              "It has no size"
+            ],
+            "correct_index": 1
+          },
+          {
+            "question": "What do the planets orbit around?",
+            "options": [
+              "The Earth",
+              "The Moon",
+              "The Sun",
+              "The stars"
+            ],
+            "correct_index": 2
+          }
+        ],
+        "image_prompt": "Generate a colorful vector art image of the Solar System on a white background, with bright colors and simple shapes that 1st-3rd grade children can understand.",
+        "robot_speech": "Let's learn about The Solar System! Can you answer this? "
+      },
+      {
+        "concept": "The Moon",
+        "questions": [
+          {
+            "question": "What orbits the Earth?",
+            "options": [
+              "The Sun",
+              "The Moon",
+              "The stars",
+              "The planets"
+            ],
+            "correct_index": 1
+          },
+          {
+            "question": "What is the moon's role in the Earth's orbit?",
+            "options": [
+              "It helps the Earth orbit faster",
+              "It helps the Earth orbit slower",
+              "It helps the Earth stay in orbit",
+              "It has no role"
+            ],
+            "correct_index": 2
+          },
+          {
+            "question": "What is the moon?",
+            "options": [
+              "A planet",
+              "A star",
+              "A satellite",
+              "A comet"
+            ],
+            "correct_index": 2
+          },
+          {
+            "question": "What does the moon do to the Earth?",
+            "options": [
+              "It makes the Earth bigger",
+              "It makes the Earth smaller",
+              "It helps the Earth stay stable",
+              "It has no effect"
+            ],
+            "correct_index": 2
+          },
+          {
+            "question": "What is the moon's shape?",
+            "options": [
+              "A circle",
+              "A square",
+              "A triangle",
+              "A rectangle"
+            ],
+            "correct_index": 0
+          },
+          {
+            "question": "What is the moon's size compared to the Earth?",
+            "options": [
+              "Larger than the Earth",
+              "Smaller than the Earth",
+              "The same size as the Earth",
+              "It has no size"
+            ],
+            "correct_index": 1
+          },
+          {
+            "question": "What does the moon do at night?",
+            "options": [
+              "It makes the stars disappear",
+              "It makes the stars appear",
+              "It shines brightly",
+              "It has no effect"
+            ],
+            "correct_index": 2
+          },
+          {
+            "question": "What is the moon's orbit around the Earth?",
+            "options": [
+              "It is a perfect circle",
+              "It is an oval shape",
+              "It is a square shape",
+              "It is a random shape"
+            ],
+            "correct_index": 1
+          }
+        ],
+        "image_prompt": "Create a vector art illustration of the Moon on a white background, with bright colors and a cute, smiling face, perfect for 1st-3rd grade children.",
+        "robot_speech": "Let's learn about The Moon! Can you answer this? "
+      },
+      {
+        "concept": "Mars",
+        "questions": [
+          {
+            "question": "What is Mars' color?",
+            "options": [
+              "Blue",
+              "Green",
+              "Red",
+              "Yellow"
+            ],
+            "correct_index": 2
+          },
+          {
+            "question": "What is Mars?",
+            "options": [
+              "A planet",
+              "A star",
+              "A moon",
+              "A comet"
+            ],
+            "correct_index": 0
+          },
+          {
+            "question": "What is special about Mars' color?",
+            "options": [
+              "It is the same color as the Earth",
+              "It is the same color as the Sun",
+              "It is a unique color",
+              "It has no color"
+            ],
+            "correct_index": 2
+          },
+          {
+            "question": "What is Mars' size compared to the Earth?",
+            "options": [
+              "Larger than the Earth",
+              "Smaller than the Earth",
+              "The same size as the Earth",
+              "It has no size"
+            ],
+            "correct_index": 1
+          },
+          {
+            "question": "What does Mars have that the Earth does not?",
+            "options": [
+              "Oceans",
+              "Mountains",
+              "Valleys",
+              "Rivers"
+            ],
+            "correct_index": 3
+          },
+          {
+            "question": "What is Mars' atmosphere like?",
+            "options": [
+              "Thick and breathable",
+              "Thin and not breathable",
+              "The same as the Earth's",
+              "It has no atmosphere"
+            ],
+            "correct_index": 1
+          },
+          {
+            "question": "What is Mars' temperature like?",
+            "options": [
+              "Hot and sunny",
+              "Cold and snowy",
+              "The same as the Earth's",
+              "It has no temperature"
+            ],
+            "correct_index": 1
+          },
+          {
+            "question": "What is Mars' surface like?",
+            "options": [
+              "Smooth and flat",
+              "Rough and rocky",
+              "The same as the Earth's",
+              "It has no surface"
+            ],
+            "correct_index": 1
+          }
+        ],
+        "image_prompt": "Design a vector art picture of Mars with its red landscape on a white background, using bright colors and fun details like robots and flags, suitable for 1st-3rd grade children.",
+        "robot_speech": "Let's learn about Mars! Can you answer this? "
+      },
+      {
+        "concept": "Jupiter",
+        "questions": [
+          {
+            "question": "What is Jupiter's size compared to the Earth?",
+            "options": [
+              "Smaller than the Earth",
+              "Larger than the Earth",
+              "The same size as the Earth",
+              "It has no size"
+            ],
+            "correct_index": 1
+          },
+          {
+            "question": "What is Jupiter?",
+            "options": [
+              "A planet",
+              "A star",
+              "A moon",
+              "A comet"
+            ],
+            "correct_index": 0
+          },
+          {
+            "question": "What is special about Jupiter's size?",
+            "options": [
+              "It is the smallest planet",
+              "It is the largest planet",
+              "It is the same size as the Earth",
+              "It has no size"
+            ],
+            "correct_index": 1
+          },
+          {
+            "question": "What is Jupiter's atmosphere like?",
+            "options": [
+              "Thin and not breathable",
+              "Thick and breathable",
+              "The same as the Earth's",
+              "It has no atmosphere"
+            ],
+            "correct_index": 0
+          },
+          {
+            "question": "What is Jupiter's temperature like?",
+            "options": [
+              "Hot and sunny",
+              "Cold and snowy",
+              "The same as the Earth's",
+              "It has no temperature"
+            ],
+            "correct_index": 0
+          },
+          {
+            "question": "What is Jupiter's surface like?",
+            "options": [
+              "Smooth and flat",
+              "Rough and rocky",
+              "The same as the Earth's",
+              "It has no surface"
+            ],
+            "correct_index": 0
+          },
+          {
+            "question": "What is Jupiter's role in the solar system?",
+            "options": [
+              "It orbits the Earth",
+              "It orbits the Sun",
+              "It helps the Earth stay stable",
+              "It has no role"
+            ],
+            "correct_index": 1
+          },
+          {
+            "question": "What is Jupiter's size compared to the other planets?",
+            "options": [
+              "Smaller than the other planets",
+              "Larger than the other planets",
+              "The same size as the other planets",
+              "It has no size"
+            ],
+            "correct_index": 1
+          }
+        ],
+        "image_prompt": "Illustrate a vector art image of Jupiter on a white background, with bright colors and a stylized, fun design that 1st-3rd grade children will love, including its distinctive Great Red Spot.",
+        "robot_speech": "Let's learn about Jupiter! Can you answer this? "
+      }
+    ]
+  }
+}

@@ -1,0 +1,380 @@
+.boot-container {
+  width: 100vw;
+  height: 100vh;
+  background-color: #050505;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Initial Power State */
+.power-btn-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  animation: fadeIn 2s ease-in-out;
+}
+
+.power-btn {
+  background: transparent;
+  border: 2px solid #333;
+  color: #555;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.power-btn:hover {
+  border-color: #00ffcc;
+  color: #00ffcc;
+  box-shadow: 0 0 30px rgba(0, 255, 204, 0.4), inset 0 0 20px rgba(0, 255, 204, 0.2);
+  transform: scale(1.05);
+}
+
+.power-label {
+  font-size: 0.8rem;
+  letter-spacing: 4px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.power-btn:hover+.power-label {
+  color: #00ffcc;
+  text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+}
+
+/* Terminal / Loading State */
+.loading-screen-complex {
+  width: 100vw;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10vw;
+  padding: 40px 10vw;
+  box-sizing: border-box;
+}
+
+.terminal-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.terminal-icon {
+  color: #00ffcc;
+  margin-bottom: 20px;
+}
+
+.logs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.log-line {
+  color: #a0a0a0;
+  font-size: 14px;
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.cursor {
+  color: #00ffcc;
+  animation: blink 1s step-end infinite;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Hologram Visualizer */
+.hologram-visualizer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 400px;
+  max-width: 400px;
+}
+
+.holo-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid transparent;
+}
+
+.holo-ring.outer {
+  width: 300px;
+  height: 300px;
+  border-top: 2px solid #00ffcc;
+  border-bottom: 2px solid rgba(0, 255, 204, 0.2);
+  animation: spinRight 8s linear infinite;
+  box-shadow: 0 0 40px rgba(0, 255, 204, 0.1);
+}
+
+.holo-ring.middle {
+  width: 220px;
+  height: 220px;
+  border-left: 2px dashed rgba(157, 78, 221, 0.8);
+  border-right: 2px dashed rgba(157, 78, 221, 0.2);
+  animation: spinLeft 5s linear infinite;
+}
+
+.holo-ring.inner {
+  width: 120px;
+  height: 120px;
+  border: 4px dotted #fff;
+  opacity: 0.5;
+  animation: spinRight 3s linear infinite;
+}
+
+.holo-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  background: #00ffcc;
+  border-radius: 50%;
+  box-shadow: 0 0 50px #00ffcc, 0 0 100px #9d4edd;
+  animation: corePulse 2s infinite alternate;
+}
+
+.holo-data-stream {
+  position: absolute;
+  bottom: -40px;
+  text-align: center;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  color: #00ffcc;
+  letter-spacing: 2px;
+}
+
+.holo-data-stream p {
+  margin: 4px 0;
+}
+
+.holo-status {
+  animation: blink 1s infinite;
+}
+
+@keyframes spinRight {
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes spinLeft {
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+
+@keyframes corePulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    box-shadow: 0 0 20px #00ffcc;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+    box-shadow: 0 0 80px #00ffcc, 0 0 60px #9d4edd;
+  }
+}
+
+/* Video State */
+.video-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 1s ease-in;
+}
+
+.boot-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.8;
+  mix-blend-mode: screen;
+}
+
+.skip-overlay {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  z-index: 10;
+}
+
+.skip-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.skip-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: white;
+}
+
+/* Complete State */
+.complete-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: slowFadeIn 2s ease-in-out;
+}
+
+.boot-title {
+  font-size: 4rem;
+  font-weight: 300;
+  letter-spacing: 8px;
+  margin: 0;
+  background: linear-gradient(90deg, #fff, #888);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glint 3s infinite linear;
+}
+
+.boot-subtitle {
+  color: #666;
+  margin-top: 20px;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  margin-bottom: 60px;
+}
+
+.next-action-btn {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  padding: 15px 40px;
+  color: white;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.next-action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: all 0.5s ease;
+}
+
+.next-action-btn:hover::before {
+  left: 100%;
+}
+
+.next-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.next-action-btn .arrow {
+  transition: transform 0.3s ease;
+}
+
+.next-action-btn:hover .arrow {
+  transform: translateX(5px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slowFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes glint {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}

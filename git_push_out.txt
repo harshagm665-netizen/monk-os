@@ -1,0 +1,30 @@
+remote: error: GH013: Repository rule violations found for refs/heads/main.        
+remote: 
+remote: - GITHUB PUSH PROTECTION        
+remote:   —————————————————————————————————————————        
+remote:     Resolve the following violations before pushing again        
+remote: 
+remote:     - Push cannot contain secrets        
+remote: 
+remote:             
+remote:      (?) Learn how to resolve a blocked push        
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push        
+remote:             
+remote:             
+remote:       —— Groq API Key ——————————————————————————————————————        
+remote:        locations:        
+remote:          - commit: 54aaafa9117378b178c330dd22b24cc5fb4832a5        
+remote:            path: os_backend/routers/rag.py:50        
+remote:          - commit: 54aaafa9117378b178c330dd22b24cc5fb4832a5        
+remote:            path: os_backend/routers/smart_killer.py:15        
+remote:          - commit: 54aaafa9117378b178c330dd22b24cc5fb4832a5        
+remote:            path: os_backend/test_groq.py:6        
+remote:             
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.        
+remote:        https://github.com/harshagm665-netizen/monk-os/security/secret-scanning/unblock-secret/3A74jXrkgj61K5Jg4m5M2tv99Lu        
+remote:             
+remote: 
+remote: 
+To https://github.com/harshagm665-netizen/monk-os.git
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/harshagm665-netizen/monk-os.git'
