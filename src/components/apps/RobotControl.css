@@ -1,0 +1,282 @@
+.robot-control-container {
+    background: #0d0f12;
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+}
+
+.rc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.rc-header h2 {
+    margin: 0;
+    color: #00ffcc;
+    font-size: 20px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-badge.online {
+    color: #00ffcc;
+    border-color: #00ffcc;
+}
+
+.status-badge.offline {
+    color: #ff3366;
+    border-color: #ff3366;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+}
+
+.rc-dashboard {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+}
+
+/* Left: Visualizer */
+.rc-visualizer {
+    flex: 0.8;
+    background: radial-gradient(circle at center, rgba(0, 255, 204, 0.1) 0%, transparent 70%);
+    border: 1px solid rgba(0, 255, 204, 0.1);
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.cyber-bot {
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 15px rgba(0, 255, 204, 0.5));
+}
+
+.cyber-bot.dancing {
+    animation: botDance 2s infinite ease-in-out;
+}
+
+@keyframes botDance {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(-10px) rotate(-10deg);
+    }
+
+    50% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    75% {
+        transform: translateY(-10px) rotate(10deg);
+    }
+
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+}
+
+/* Right: Controls Panel */
+.rc-controls-panel {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.control-section {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.control-section h3 {
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Base Kinematics D-pad */
+.d-pad-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.d-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 60px);
+    grid-template-rows: repeat(3, 60px);
+    gap: 8px;
+    justify-content: center;
+}
+
+.d-btn {
+    background: rgba(0, 255, 204, 0.1);
+    border: 1px solid rgba(0, 255, 204, 0.3);
+    color: #00ffcc;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.d-btn:hover {
+    background: rgba(0, 255, 204, 0.3);
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+}
+
+.d-btn:active {
+    transform: scale(0.9);
+}
+
+.d-btn.up {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.d-btn.left {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.d-btn.right {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.d-btn.down {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+.d-btn.stop {
+    grid-column: 2;
+    grid-row: 2;
+    background: rgba(255, 51, 102, 0.2);
+    border-color: rgba(255, 51, 102, 0.5);
+    color: #ff3366;
+}
+
+.d-btn.stop:hover {
+    background: rgba(255, 51, 102, 0.4);
+    box-shadow: 0 0 15px rgba(255, 51, 102, 0.6);
+}
+
+/* Aux Controls */
+.aux-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.aux-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.aux-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #00ffcc;
+    color: #00ffcc;
+}
+
+/* Sequences */
+.sequence-group {
+    display: flex;
+    gap: 10px;
+}
+
+.seq-btn {
+    flex: 1;
+    padding: 15px;
+    border-radius: 8px;
+    background: rgba(255, 204, 0, 0.1);
+    border: 1px solid rgba(255, 204, 0, 0.3);
+    color: #ffcc00;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+.seq-btn:hover {
+    background: rgba(255, 204, 0, 0.2);
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+}
+
+.seq-btn.active {
+    background: rgba(255, 204, 0, 0.4);
+    box-shadow: 0 0 25px rgba(255, 204, 0, 0.6);
+}
+
+.seq-btn.stop-seq {
+    background: rgba(255, 51, 102, 0.1);
+    border-color: rgba(255, 51, 102, 0.3);
+    color: #ff3366;
+}
+
+.seq-btn.stop-seq:hover {
+    background: rgba(255, 51, 102, 0.3);
+    box-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
+}
+
+.spin {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}

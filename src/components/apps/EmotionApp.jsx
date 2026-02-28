@@ -1,70 +1,64 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { useCamera } from '../../context/CameraContext';
+import CameraDiagnosticAgent from '../CameraDiagnosticAgent';
 import './Apps.css';
 
-const EmotionApp = () => {
+const EmotionApp = ({ onClose }) => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const wsRef = useRef(null);
-    const [hasPermission, setHasPermission] = useState(false);
-    const [errorMsg, setErrorMsg] = useState("");
+    const { stream, cameraError, isInitializing, requestCamera, releaseCamera } = useCamera();
     const [detectedFaces, setDetectedFaces] = useState([]);
 
     useEffect(() => {
-        let stream = null;
+        requestCamera();
+        return () => releaseCamera();
+    }, []);
+
+    // ── Bind Global Camera Stream ──
+    useEffect(() => {
         let animationFrameId = null;
 
-        const startCamera = async () => {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
-                }
-                setHasPermission(true);
+        if (stream && videoRef.current) {
+            videoRef.current.srcObject = stream;
 
-                wsRef.current = new WebSocket("ws://127.0.0.1:8000/api/vision/ws/video-feed");
+            wsRef.current = new WebSocket("ws://127.0.0.1:8000/api/vision/ws/video-feed");
 
-                wsRef.current.onmessage = (event) => {
-                    const data = JSON.parse(event.data);
-                    setDetectedFaces(data.faces || []);
-                };
+            wsRef.current.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                setDetectedFaces(data.faces || []);
+            };
 
-                const sendFrame = () => {
-                    if (wsRef.current?.readyState === WebSocket.OPEN && videoRef.current && canvasRef.current) {
-                        const video = videoRef.current;
-                        const canvas = canvasRef.current;
+            const sendFrame = () => {
+                if (wsRef.current?.readyState === WebSocket.OPEN && videoRef.current && canvasRef.current) {
+                    const video = videoRef.current;
+                    const canvas = canvasRef.current;
 
-                        if (video.videoWidth > 0 && video.videoHeight > 0) {
-                            canvas.width = video.videoWidth;
-                            canvas.height = video.videoHeight;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            const base64Frame = canvas.toDataURL("image/jpeg", 0.5);
-                            wsRef.current.send(base64Frame);
-                        }
+                    if (video.videoWidth > 0 && video.videoHeight > 0) {
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        const base64Frame = canvas.toDataURL("image/jpeg", 0.5);
+                        wsRef.current.send(base64Frame);
                     }
-                    setTimeout(() => {
-                        animationFrameId = requestAnimationFrame(sendFrame);
-                    }, 100);
-                };
+                }
+                setTimeout(() => {
+                    animationFrameId = requestAnimationFrame(sendFrame);
+                }, 100);
+            };
 
-                wsRef.current.onopen = () => {
-                    sendFrame();
-                };
-
-            } catch (err) {
-                console.error("Camera permission / WS error:", err);
-                setErrorMsg("Camera access denied or backend offline.");
-            }
-        };
-
-        startCamera();
+            wsRef.current.onopen = () => {
+                sendFrame();
+            };
+        }
 
         return () => {
-            if (stream) stream.getTracks().forEach(track => track.stop());
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
             if (wsRef.current) wsRef.current.close();
         };
-    }, []);
+    }, [stream]);
 
     const renderBoxes = () => {
         if (!videoRef.current) return null;
@@ -96,9 +90,18 @@ const EmotionApp = () => {
 
     return (
         <div className="app-container emotion-app">
+            {onClose && (
+                <button className="app-internal-back-btn" onClick={onClose} title="Go Back">
+                    <ArrowLeft size={20} />
+                </button>
+            )}
             <div className="camera-feed-mock emotion-feed">
-                {!hasPermission && !errorMsg && <p>Requesting camera access...</p>}
-                {errorMsg && <p className="error-text">{errorMsg}</p>}
+                {isInitializing && <p>Requesting global camera access...</p>}
+                {cameraError && (
+                    <div style={{ position: 'absolute', zIndex: 50, top: '10%' }}>
+                        <CameraDiagnosticAgent error={cameraError} onRetry={requestCamera} />
+                    </div>
+                )}
 
                 <video
                     ref={videoRef}
@@ -106,11 +109,11 @@ const EmotionApp = () => {
                     playsInline
                     muted
                     className="real-camera-video"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: hasPermission ? 'block' : 'none' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: stream && !cameraError ? 'block' : 'none' }}
                 />
                 <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-                {hasPermission && detectedFaces.length > 0 && renderBoxes()}
+                {stream && !cameraError && detectedFaces.length > 0 && renderBoxes()}
             </div>
             <div className="app-sidebar">
                 <h4>Emotion Analysis</h4>

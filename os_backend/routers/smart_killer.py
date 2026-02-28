@@ -9,6 +9,8 @@ import io
 import base64
 from PIL import Image as PILImage
 from functools import wraps
+from datetime import datetime
+from database import SessionLocal, Student, QuizResult
 
 router = APIRouter()
 
@@ -22,6 +24,12 @@ class AnswerCheckRequest(BaseModel):
     question: str
     selected_answer: str
     correct_answer: str
+
+class ScoreSaveRequest(BaseModel):
+    student_name: str
+    topic: str
+    score: int
+    total: int
 
 # --- AGENT 6: Error Controller / Debugger ---
 # Wraps execution, logs to console, and manages controlled failures
@@ -189,7 +197,7 @@ async def upload_learn_agent(file: UploadFile = File(...)):
                     {"type": "image_url", "image_url": {"url": image_url}},
                 ],
             }],
-            model="llama-3.2-11b-vision-preview",
+            model="meta-llama/llama-4-maverick-17b-128e-instruct",
         )
         text = response.choices[0].message.content
     else:
@@ -226,3 +234,26 @@ async def agent_5_evaluator(request: AnswerCheckRequest):
         "is_correct": is_correct,
         "feedback": feedback
     }
+
+@router.post("/save-score")
+def save_quiz_score(req: ScoreSaveRequest):
+    db = SessionLocal()
+    try:
+        student = db.query(Student).filter(Student.name == req.student_name).first()
+        if not student:
+            # Auto-enroll
+            student = Student(name=req.student_name, grade="Auto-Enrolled")
+            db.add(student)
+            db.commit()
+            db.refresh(student)
+            
+        today = datetime.now().strftime("%Y-%m-%d")
+        qr = QuizResult(student_id=student.id, topic=req.topic, score=req.score, total=req.total, date=today)
+        db.add(qr)
+        db.commit()
+        return {"success": True, "message": "Score saved to SQLite"}
+    except Exception as e:
+        print(f"[Smart Killer] Error saving score: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        db.close()

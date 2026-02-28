@@ -1,17 +1,19 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { useCamera } from '../../context/CameraContext';
+import CameraDiagnosticAgent from '../CameraDiagnosticAgent';
 import './Apps.css';
 
 const WS_URL = 'ws://127.0.0.1:8000/api/vision/ws/video-feed';
 
-const FaceRecApp = () => {
+const FaceRecApp = ({ onClose }) => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const wsRef = useRef(null);
     const frameTimerRef = useRef(null);
     const reconnectTimerRef = useRef(null);
 
-    const [hasPermission, setHasPermission] = useState(false);
-    const [errorMsg, setErrorMsg] = useState('');
+    const { stream, cameraError, isInitializing, requestCamera, releaseCamera } = useCamera();
     const [detectedFaces, setDetectedFaces] = useState([]);
     const [wsStatus, setWsStatus] = useState('connecting'); // connecting | live | reconnecting | offline
 
@@ -19,6 +21,11 @@ const FaceRecApp = () => {
     const [isRegistering, setIsRegistering] = useState(false);
     const [registerName, setRegisterName] = useState('');
     const [registerStatus, setRegisterStatus] = useState('');
+
+    useEffect(() => {
+        requestCamera();
+        return () => releaseCamera();
+    }, []);
 
     // ── WebSocket: open, send frames, reconnect ──
     const connectWS = useCallback(() => {
@@ -66,30 +73,19 @@ const FaceRecApp = () => {
         };
     }, []);
 
-    // ── Camera startup ──
+    // ── Bind Global Camera Stream ──
     useEffect(() => {
-        let stream = null;
-
-        const startCamera = async () => {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                if (videoRef.current) videoRef.current.srcObject = stream;
-                setHasPermission(true);
-                connectWS();
-            } catch (err) {
-                setErrorMsg('Camera access denied or unavailable.');
-            }
-        };
-
-        startCamera();
+        if (stream && videoRef.current) {
+            videoRef.current.srcObject = stream;
+            connectWS();
+        }
 
         return () => {
-            stream?.getTracks().forEach(t => t.stop());
             clearTimeout(frameTimerRef.current);
             clearTimeout(reconnectTimerRef.current);
             wsRef.current?.close();
         };
-    }, [connectWS]);
+    }, [stream, connectWS]);
 
     // ── Bounding-box renderer ──
     const renderBoxes = () => {
@@ -130,7 +126,9 @@ const FaceRecApp = () => {
 
     // Status line
     const statusText = () => {
-        if (!hasPermission) return '';
+        if (cameraError) return '⚠ Camera Error';
+        if (isInitializing) return 'Loading camera...';
+        if (!stream) return '';
         if (wsStatus === 'offline') return '⚠ Backend offline';
         if (wsStatus === 'reconnecting') return '↻ Reconnecting to AI...';
         if (detectedFaces.length === 0) return '◎ Finding face...';
@@ -177,9 +175,15 @@ const FaceRecApp = () => {
 
     return (
         <div className="app-container face-rec">
+            {onClose && (
+                <button className="app-internal-back-btn" onClick={onClose} title="Go Back">
+                    <ArrowLeft size={20} />
+                </button>
+            )}
+
             <div className="camera-feed-mock" style={{ position: 'relative', overflow: 'hidden' }}>
                 {/* WS badge */}
-                {hasPermission && (
+                {stream && !cameraError && (
                     <div style={{
                         position: 'absolute', top: 8, right: 8, zIndex: 10,
                         background: wsStatus === 'live' ? 'rgba(0,255,204,0.15)' : 'rgba(255,100,0,0.2)',
@@ -192,19 +196,23 @@ const FaceRecApp = () => {
                     </div>
                 )}
 
-                {!hasPermission && !errorMsg && <p>Requesting camera access...</p>}
-                {errorMsg && <p className="error-text">{errorMsg}</p>}
+                {isInitializing && <p>Requesting global camera access...</p>}
+                {cameraError && (
+                    <div style={{ position: 'absolute', zIndex: 50, top: '10%' }}>
+                        <CameraDiagnosticAgent error={cameraError} onRetry={requestCamera} />
+                    </div>
+                )}
 
                 <video
                     ref={videoRef} autoPlay playsInline muted
                     className="real-camera-video"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: hasPermission ? 'block' : 'none' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: stream && !cameraError ? 'block' : 'none' }}
                 />
                 <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-                {hasPermission && renderBoxes()}
+                {stream && !cameraError && renderBoxes()}
 
-                {hasPermission && (
+                {stream && !cameraError && (
                     <p className="status-text" style={{ color: statusColor() }}>
                         {statusText()}
                     </p>

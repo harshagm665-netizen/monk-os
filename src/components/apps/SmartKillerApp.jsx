@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Wand2, Image as ImageIcon, CheckCircle, Mic, Volume2, SkipForward, Users, Download } from 'lucide-react';
+import { Wand2, Image as ImageIcon, CheckCircle, Mic, Volume2, SkipForward, Users, Download, Home, ArrowLeft } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import Lottie from 'lottie-react';
+import robotAnimation from '../../robot_toon.json';
 import './Apps.css';
 
-const SmartKillerApp = () => {
+// Audio Logic (Instantiated per play to avoid state lock)
+const playSound = (type) => {
+    try {
+        const audio = new Audio(type === 'correct' ? '/correct_chime.mp3' : '/wrong_buzzer.mp3');
+        audio.currentTime = 0;
+        audio.play().catch(e => console.warn("Browser blocked autoplay audio:", e));
+    } catch (err) { }
+};
+
+const SmartKillerApp = ({ onClose }) => {
     // Pipeline States: upload -> learning -> registration -> permissions -> quiz_intro -> quiz_active -> quiz_result -> student_finished -> final_results
     const [state, setState] = useState('upload');
     const [curriculum, setCurriculum] = useState(null);
@@ -34,6 +45,29 @@ const SmartKillerApp = () => {
         }
         return () => clearInterval(timer);
     }, [state, timeLeft]);
+
+    // TTS Auto-Reader
+    useEffect(() => {
+        if (state === 'quiz_active' && activeQuestionPool.length > 0) {
+            const activeQuestion = activeQuestionPool[qIdx];
+            if (activeQuestion && activeQuestion.question) {
+                window.speechSynthesis.cancel();
+                let text = activeQuestion.question;
+                if (activeQuestion.options && activeQuestion.options.length === 4) {
+                    text += `. Option A: ${activeQuestion.options[0]}. Option B: ${activeQuestion.options[1]}. Option C: ${activeQuestion.options[2]}. Option D: ${activeQuestion.options[3]}.`;
+                }
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.pitch = 1.2;
+                utterance.rate = 0.95;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+    }, [qIdx, state, activeQuestionPool]);
+
+    // Cleanup TTS on unmount
+    useEffect(() => {
+        return () => window.speechSynthesis.cancel();
+    }, []);
 
     // Leader Agent Interaction (File Upload & 100MB Limit)
     const handleFileUpload = async (e) => {
@@ -124,6 +158,7 @@ const SmartKillerApp = () => {
 
     // Agent 5: Check Answer
     const handleCheckAnswer = async (answer) => {
+        window.speechSynthesis.cancel(); // Mute TTS immediately
         setState('quiz_result');
         setSelectedAnswer(answer);
 
@@ -146,6 +181,9 @@ const SmartKillerApp = () => {
 
             if (data.is_correct) {
                 setScore(s => ({ ...s, correct: s.correct + 1 }));
+                playSound('correct');
+            } else {
+                playSound('wrong');
             }
             setScore(s => ({ ...s, total: s.total + 1 }));
 
@@ -158,7 +196,13 @@ const SmartKillerApp = () => {
                 is_correct: isCorrect,
                 feedback: isCorrect ? "Great job!" : "Oops, not quite!"
             });
-            if (isCorrect) setScore(s => ({ ...s, correct: s.correct + 1 }));
+
+            if (isCorrect) {
+                setScore(s => ({ ...s, correct: s.correct + 1 }));
+                playSound('correct');
+            } else {
+                playSound('wrong');
+            }
             setScore(s => ({ ...s, total: s.total + 1 }));
         }
     };
@@ -184,6 +228,19 @@ const SmartKillerApp = () => {
                 score: score.correct,
                 total: score.total
             }]);
+
+            // Save to Local SQLite DB via Agent
+            fetch('http://127.0.0.1:8000/api/smart-killer/save-score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    student_name: studentName,
+                    topic: activeTopic?.concept || "Mixed Quiz",
+                    score: score.correct,
+                    total: score.total
+                })
+            }).catch(e => console.error("[Agent 5] Failed to save score to DB", e));
+
             setState('student_finished');
         }
     };
@@ -234,240 +291,286 @@ const SmartKillerApp = () => {
 
     return (
         <div className="app-container smart-killer-app">
+            <button
+                className="app-internal-back-btn"
+                onClick={() => {
+                    window.speechSynthesis.cancel();
+                    if (onClose) onClose();
+                    else setState('upload');
+                }}
+                title="Go Back"
+            >
+                <ArrowLeft size={20} />
+            </button>
+
             {/* UPLOAD STATE */}
-            {state === 'upload' && (
-                <div className="upload-state">
-                    <div className="upload-circle">
-                        <ImageIcon size={32} />
+            {
+                state === 'upload' && (
+                    <div className="upload-state">
+                        <div className="upload-circle">
+                            <ImageIcon size={32} />
+                        </div>
+                        <h3>Upload Study Material</h3>
+                        <p>I will learn this document and create a visualized quiz.</p>
+                        <button className="magic-btn" onClick={() => document.getElementById('file-upload').click()}>
+                            <Wand2 size={16} /> Select Document
+                        </button>
+                        <input
+                            type="file"
+                            id="file-upload"
+                            style={{ display: 'none' }}
+                            accept="image/*,.pdf,.txt,.md"
+                            onChange={handleFileUpload}
+                        />
+                        <p className="loading-subtext" style={{ marginTop: '30px' }}>Multi-Agent System Armed.</p>
                     </div>
-                    <h3>Upload Study Material</h3>
-                    <p>I will learn this document and create a visualized quiz.</p>
-                    <button className="magic-btn" onClick={() => document.getElementById('file-upload').click()}>
-                        <Wand2 size={16} /> Select Document
-                    </button>
-                    <input
-                        type="file"
-                        id="file-upload"
-                        style={{ display: 'none' }}
-                        accept="image/*,.pdf,.txt,.md"
-                        onChange={handleFileUpload}
-                    />
-                    <p className="loading-subtext" style={{ marginTop: '30px' }}>Multi-Agent System Armed.</p>
-                </div>
-            )}
+                )
+            }
 
             {/* REGISTRATION STATE */}
-            {state === 'registration' && (
-                <div className="quiz-state" style={{ textAlign: 'center' }}>
-                    <div className="upload-circle" style={{ margin: '0 auto 20px', background: 'rgba(0, 255, 204, 0.2)' }}>
-                        <Users size={32} color="#00ffcc" />
-                    </div>
-                    <h3>Student Registration</h3>
-                    <p style={{ color: '#aaa', marginBottom: '30px' }}>Enter the name of the student taking the quiz.</p>
+            {
+                state === 'registration' && (
+                    <div className="quiz-state" style={{ textAlign: 'center' }}>
+                        <div className="upload-circle" style={{ margin: '0 auto 20px', background: 'rgba(0, 255, 204, 0.2)' }}>
+                            <Users size={32} color="#00ffcc" />
+                        </div>
+                        <h3>Student Registration</h3>
+                        <p style={{ color: '#aaa', marginBottom: '30px' }}>Enter the name of the student taking the quiz.</p>
 
-                    <input
-                        type="text"
-                        value={studentName}
-                        onChange={(e) => setStudentName(e.target.value)}
-                        placeholder="e.g. Alice"
-                        style={{
-                            padding: '12px 20px',
-                            fontSize: '18px',
-                            borderRadius: '8px',
-                            border: '1px solid #00d2ff',
-                            background: '#111',
-                            color: '#fff',
-                            marginBottom: '30px',
-                            width: '80%',
-                            textAlign: 'center'
-                        }}
-                    />
+                        <input
+                            type="text"
+                            value={studentName}
+                            onChange={(e) => setStudentName(e.target.value)}
+                            placeholder="e.g. Alice"
+                            style={{
+                                padding: '12px 20px',
+                                fontSize: '18px',
+                                borderRadius: '8px',
+                                border: '1px solid #00d2ff',
+                                background: '#111',
+                                color: '#fff',
+                                marginBottom: '30px',
+                                width: '80%',
+                                textAlign: 'center'
+                            }}
+                        />
 
-                    <button className="magic-btn" onClick={startStudentTest} style={{ margin: '0 auto', justifyContent: 'center' }}>
-                        Start Quiz for {studentName || 'Student'}
-                    </button>
-
-                    {groupReports.length > 0 && (
-                        <p style={{ marginTop: '20px', color: '#555' }}>
-                            {groupReports.length} student(s) have finished so far.
-                        </p>
-                    )}
-                </div>
-            )}
-
-            {/* LEADER AGENT LEARNING STATE */}
-            {state === 'learning' && (
-                <div className="learning-state">
-                    <div className="ai-core-loader">
-                        <div className="orbit orbit-1"></div>
-                        <div className="orbit orbit-2"></div>
-                        <div className="orbit orbit-3"></div>
-                        <div className="core-gem"></div>
-                    </div>
-                    <h3 className="glitch-text" data-text="Pipeline Processing">Pipeline Processing</h3>
-                    <p className="loading-subtext">Agent 1: Extracting Content...</p>
-                    <p className="loading-subtext">Agent 2: Generating Visuals... <span className="blink">_</span></p>
-                </div>
-            )}
-
-            {/* AGENT 3: PERMISSIONS STATE */}
-            {state === 'permissions' && (
-                <div className="quiz-state" style={{ textAlign: 'center' }}>
-                    <div className="brain-pulse" style={{ margin: '0 auto 20px' }}><Mic size={20} style={{ marginTop: 10 }} /></div>
-                    <h3>Audio Access Required</h3>
-                    <p style={{ color: '#aaa', margin: '15px 0 30px' }}>
-                        To let the robot speak and to hear your child's answers,
-                        Agent 3 requests Microphone and Speaker permissions.
-                    </p>
-                    <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
-                        <button className="option-btn" onClick={() => handlePermissions(true)} style={{ background: '#00ffcc', color: '#000', fontWeight: 'bold', justifyContent: 'center' }}>
-                            <Volume2 size={18} /> Grant Access
+                        <button className="magic-btn" onClick={startStudentTest} style={{ margin: '0 auto', justifyContent: 'center' }}>
+                            Start Quiz for {studentName || 'Student'}
                         </button>
-                        <button className="option-btn" onClick={() => handlePermissions(false)} style={{ justifyContent: 'center' }}>
-                            <SkipForward size={18} /> Skip for now
-                        </button>
-                    </div>
-                </div>
-            )}
 
-            {/* QUIZ INTRO (TOPIC VISUALIZER) */}
-            {state === 'quiz_intro' && activeTopic && (
-                <div className="quiz-state">
-                    <div className="quiz-header" style={{ flexDirection: 'column' }}>
-                        <h3 style={{ color: '#00d2ff', marginBottom: '10px', textAlign: 'center' }}>
-                            New Topic: {activeTopic.concept}
-                        </h3>
-                        <div className="gen-image-mock" style={{ padding: '30px', margin: '20px 0' }}>
-                            <span>[Visualizing: {activeTopic.image_prompt}]</span>
-                        </div>
-                        <p style={{ fontSize: '18px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
-                            🤖 "{activeTopic.robot_speech || `Let's see what you learned about ${activeTopic.concept}!`}"
-                        </p>
-                        <button className="magic-btn" onClick={startQuizCycle} style={{ justifyContent: 'center', alignSelf: 'center' }}>
-                            Ready!
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* AGENT 4: ACTIVE QUIZ TIMER */}
-            {state === 'quiz_active' && activeQuestion && (
-                <div className="quiz-state">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                        <div style={{ color: '#aaa', fontSize: '14px' }}>Topic: {activeTopic?.concept}</div>
-                        <div style={{
-                            background: timeLeft <= 3 ? '#ff3366' : '#222',
-                            padding: '8px 15px',
-                            borderRadius: '20px',
-                            fontWeight: 'bold',
-                            border: `1px solid ${timeLeft <= 3 ? '#ff3366' : '#00ffcc'}`,
-                            transition: 'all 0.3s'
-                        }}>
-                            ⏳ 00:{timeLeft.toString().padStart(2, '0')}
-                        </div>
-                    </div>
-
-                    <div className="question-card">
-                        <h4 style={{ fontSize: '1.4rem', marginBottom: '30px' }}>{activeQuestion.question}</h4>
-                        <div className="options">
-                            {activeQuestion.options.map((opt, oIdx) => (
-                                <button
-                                    key={oIdx}
-                                    className="option-btn"
-                                    onClick={() => handleCheckAnswer(opt)}
-                                >
-                                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', border: '2px solid #555', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px', fontSize: '12px' }}>
-                                        {['A', 'B', 'C', 'D'][oIdx]}
-                                    </div>
-                                    {opt}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* AGENT 5: EVALUATION RESULTS */}
-            {state === 'quiz_result' && activeQuestion && feedback && (
-                <div className="quiz-state" style={{ textAlign: 'center' }}>
-                    <div style={{
-                        padding: '30px',
-                        background: feedback.is_correct ? 'rgba(0, 255, 204, 0.1)' : 'rgba(255, 51, 102, 0.1)',
-                        border: `2px solid ${feedback.is_correct ? '#00ffcc' : '#ff3366'}`,
-                        borderRadius: '12px',
-                        marginBottom: '30px'
-                    }}>
-                        <div style={{ fontSize: '48px', marginBottom: '15px' }}>
-                            {feedback.is_correct ? '🌟' : '💡'}
-                        </div>
-                        <h2 style={{ color: feedback.is_correct ? '#00ffcc' : '#ff3366', marginBottom: '15px' }}>
-                            {feedback.is_correct ? 'Correct!' : 'Time Up / Incorrect'}
-                        </h2>
-                        <p style={{ fontSize: '18px', lineHeight: '1.5' }}>{feedback.feedback}</p>
-
-                        {!feedback.is_correct && (
-                            <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
-                                Correct Answer: <br />
-                                <strong style={{ color: '#00ffcc', fontSize: '20px' }}>
-                                    {activeQuestion.options[activeQuestion.correct_index]}
-                                </strong>
-                            </div>
+                        {groupReports.length > 0 && (
+                            <p style={{ marginTop: '20px', color: '#555' }}>
+                                {groupReports.length} student(s) have finished so far.
+                            </p>
                         )}
                     </div>
+                )
+            }
 
-                    <button className="magic-btn" onClick={nextQuestion} style={{ margin: '0 auto', justifyContent: 'center' }}>
-                        Next Question <SkipForward size={16} />
-                    </button>
-                </div>
-            )}
+            {/* LEADER AGENT LEARNING STATE */}
+            {
+                state === 'learning' && (
+                    <div className="learning-state">
+                        <div className="ai-core-loader">
+                            <div className="orbit orbit-1"></div>
+                            <div className="orbit orbit-2"></div>
+                            <div className="orbit orbit-3"></div>
+                            <div className="core-gem"></div>
+                        </div>
+                        <h3 className="glitch-text" data-text="Pipeline Processing">Pipeline Processing</h3>
+                        <p className="loading-subtext">Agent 1: Extracting Content...</p>
+                        <p className="loading-subtext">Agent 2: Generating Visuals... <span className="blink">_</span></p>
+                    </div>
+                )
+            }
+
+            {/* AGENT 3: PERMISSIONS STATE */}
+            {
+                state === 'permissions' && (
+                    <div className="quiz-state" style={{ textAlign: 'center' }}>
+                        <div className="brain-pulse" style={{ margin: '0 auto 20px' }}><Mic size={20} style={{ marginTop: 10 }} /></div>
+                        <h3>Audio Access Required</h3>
+                        <p style={{ color: '#aaa', margin: '15px 0 30px' }}>
+                            To let the robot speak and to hear your child's answers,
+                            Agent 3 requests Microphone and Speaker permissions.
+                        </p>
+                        <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+                            <button className="option-btn" onClick={() => handlePermissions(true)} style={{ background: '#00ffcc', color: '#000', fontWeight: 'bold', justifyContent: 'center' }}>
+                                <Volume2 size={18} /> Grant Access
+                            </button>
+                            <button className="option-btn" onClick={() => handlePermissions(false)} style={{ justifyContent: 'center' }}>
+                                <SkipForward size={18} /> Skip for now
+                            </button>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* QUIZ INTRO (TOPIC VISUALIZER) */}
+            {
+                state === 'quiz_intro' && activeTopic && (
+                    <div className="quiz-state">
+                        <div className="quiz-header" style={{ flexDirection: 'column' }}>
+                            <h3 style={{ color: '#00d2ff', marginBottom: '10px', textAlign: 'center' }}>
+                                New Topic: {activeTopic.concept}
+                            </h3>
+                            <div className="gen-image-mock" style={{ padding: '15px', margin: '10px 0', fontSize: '14px' }}>
+                                <span>[Visualizing: {activeTopic.image_prompt}]</span>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '20px' }}>
+                                <div style={{ width: '140px', height: '140px', flexShrink: 0 }}>
+                                    <Lottie animationData={robotAnimation} loop={true} style={{ width: '100%', height: '100%' }} />
+                                </div>
+                                <p style={{ fontSize: '20px', fontWeight: 'bold', textAlign: 'center', maxWidth: '400px', lineHeight: '1.4' }}>
+                                    🤖 "{activeTopic.robot_speech || `Let's see what you learned about ${activeTopic.concept}!`}"
+                                </p>
+                            </div>
+                            <button className="magic-btn" onClick={startQuizCycle} style={{ margin: '0 auto', display: 'flex', justifyContent: 'center' }}>
+                                Ready!
+                            </button>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* AGENT 4: ACTIVE QUIZ TIMER */}
+            {
+                state === 'quiz_active' && activeQuestion && (
+                    <div className="quiz-state">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <div style={{ color: '#aaa', fontSize: '14px' }}>Topic: {activeTopic?.concept}</div>
+                            <div style={{
+                                background: timeLeft <= 3 ? '#ff3366' : '#222',
+                                padding: '8px 15px',
+                                borderRadius: '20px',
+                                fontWeight: 'bold',
+                                border: `1px solid ${timeLeft <= 3 ? '#ff3366' : '#00ffcc'}`,
+                                transition: 'all 0.3s'
+                            }}>
+                                ⏳ 00:{timeLeft.toString().padStart(2, '0')}
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '25px', marginTop: '10px' }}>
+                            <div style={{ width: '120px', height: '120px', flexShrink: 0 }}>
+                                <Lottie animationData={robotAnimation} loop={true} speed={0.5} style={{ width: '100%', height: '100%' }} />
+                            </div>
+                        </div>
+
+                        <div className="question-card" style={{ padding: '20px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '15px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                            <h4 style={{ fontSize: '1.6rem', marginBottom: '35px', textAlign: 'center', color: '#fff', lineHeight: '1.4' }}>{activeQuestion.question}</h4>
+                            <div className="options">
+                                {activeQuestion.options.map((opt, oIdx) => (
+                                    <button
+                                        key={oIdx}
+                                        className="option-btn"
+                                        onClick={() => handleCheckAnswer(opt)}
+                                    >
+                                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', border: '2px solid #555', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px', fontSize: '12px' }}>
+                                            {['A', 'B', 'C', 'D'][oIdx]}
+                                        </div>
+                                        {opt}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* AGENT 5: EVALUATION RESULTS */}
+            {
+                state === 'quiz_result' && activeQuestion && feedback && (
+                    <div className="quiz-state" style={{ textAlign: 'center' }}>
+                        <div style={{
+                            padding: '30px',
+                            background: feedback.is_correct ? 'rgba(0, 255, 204, 0.1)' : 'rgba(255, 51, 102, 0.1)',
+                            border: `2px solid ${feedback.is_correct ? '#00ffcc' : '#ff3366'}`,
+                            borderRadius: '12px',
+                            marginBottom: '30px'
+                        }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
+                                <div style={{ width: '120px', height: '120px', flexShrink: 0 }}>
+                                    <Lottie
+                                        animationData={robotAnimation}
+                                        loop={feedback.is_correct}
+                                        speed={feedback.is_correct ? 2.5 : 0.2}
+                                        style={{ width: '100%', height: '100%' }}
+                                    />
+                                </div>
+                                <h2 style={{ color: feedback.is_correct ? '#00ffcc' : '#ff3366', margin: 0, fontSize: '28px' }}>
+                                    {feedback.is_correct ? 'Correct! 🌟' : 'Time Up / Incorrect 💡'}
+                                </h2>
+                            </div>
+                            <p style={{ fontSize: '18px', lineHeight: '1.5' }}>{feedback.feedback}</p>
+
+                            {!feedback.is_correct && (
+                                <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                                    Correct Answer: <br />
+                                    <strong style={{ color: '#00ffcc', fontSize: '20px' }}>
+                                        {activeQuestion.options[activeQuestion.correct_index]}
+                                    </strong>
+                                </div>
+                            )}
+                        </div>
+
+                        <button className="magic-btn" onClick={nextQuestion} style={{ margin: '0 auto', justifyContent: 'center' }}>
+                            Next Question <SkipForward size={16} />
+                        </button>
+                    </div>
+                )
+            }
 
             {/* STUDENT FINISHED STATE */}
-            {state === 'student_finished' && (
-                <div className="quiz-state" style={{ textAlign: 'center' }}>
-                    <h2 style={{ fontSize: '2rem', marginBottom: '20px' }}>Great work, {studentName}! 🎉</h2>
-                    <div style={{ fontSize: '4rem', color: '#00ffcc', fontWeight: 'bold', marginBottom: '10px' }}>
-                        {score.correct} / {score.total}
-                    </div>
-                    <p style={{ fontSize: '18px', color: '#aaa', marginBottom: '40px' }}>Your score has been recorded.</p>
+            {
+                state === 'student_finished' && (
+                    <div className="quiz-state" style={{ textAlign: 'center' }}>
+                        <h2 style={{ fontSize: '2rem', marginBottom: '20px' }}>Great work, {studentName}! 🎉</h2>
+                        <div style={{ fontSize: '4rem', color: '#00ffcc', fontWeight: 'bold', marginBottom: '10px' }}>
+                            {score.correct} / {score.total}
+                        </div>
+                        <p style={{ fontSize: '18px', color: '#aaa', marginBottom: '40px' }}>Your score has been recorded.</p>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '300px', margin: '0 auto' }}>
-                        <button className="option-btn" onClick={() => {
-                            setStudentName('');
-                            setState('registration');
-                        }} style={{ justifyContent: 'center' }}>
-                            <Users size={18} /> Next Student
-                        </button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '300px', margin: '0 auto' }}>
+                            <button className="option-btn" onClick={() => {
+                                setStudentName('');
+                                setState('registration');
+                            }} style={{ justifyContent: 'center' }}>
+                                <Users size={18} /> Next Student
+                            </button>
 
-                        <button className="magic-btn" onClick={() => setState('final_results')} style={{ justifyContent: 'center', background: '#ff3366', color: '#fff' }}>
-                            Finish Group Quiz
-                        </button>
+                            <button className="magic-btn" onClick={() => setState('final_results')} style={{ justifyContent: 'center', background: '#ff3366', color: '#fff' }}>
+                                Finish Group Quiz
+                            </button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
             {/* FINAL SCORE & AGENT 7 EXPORT */}
-            {state === 'final_results' && (
-                <div className="quiz-state" style={{ textAlign: 'center' }}>
-                    <div className="ai-core-loader" style={{ margin: '0 auto 30px' }}>
-                        <div className="orbit orbit-1" style={{ animationDuration: '6s' }}></div>
-                        <div className="orbit orbit-2" style={{ animationDuration: '4s' }}></div>
-                        <div className="core-gem" style={{ width: '40px', height: '40px' }}></div>
+            {
+                state === 'final_results' && (
+                    <div className="quiz-state" style={{ textAlign: 'center' }}>
+                        <div className="ai-core-loader" style={{ margin: '0 auto 30px' }}>
+                            <div className="orbit orbit-1" style={{ animationDuration: '6s' }}></div>
+                            <div className="orbit orbit-2" style={{ animationDuration: '4s' }}></div>
+                            <div className="core-gem" style={{ width: '40px', height: '40px' }}></div>
+                        </div>
+                        <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>Group Quiz Complete! 🎉</h2>
+                        <p style={{ color: '#aaa', marginBottom: '30px' }}>Testing complete for {groupReports.length} student(s).</p>
+
+                        <button className="magic-btn" onClick={downloadPDF} style={{ margin: '0 auto 20px', justifyContent: 'center', background: '#00d2ff' }}>
+                            <Download size={18} /> Download PDF Report (Agent 7)
+                        </button>
+
+                        <button className="option-btn" onClick={() => {
+                            setGroupReports([]);
+                            setState('upload');
+                        }} style={{ margin: '0 auto', justifyContent: 'center', border: 'none' }}>
+                            Start New Session
+                        </button>
                     </div>
-                    <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>Group Quiz Complete! 🎉</h2>
-                    <p style={{ color: '#aaa', marginBottom: '30px' }}>Testing complete for {groupReports.length} student(s).</p>
-
-                    <button className="magic-btn" onClick={downloadPDF} style={{ margin: '0 auto 20px', justifyContent: 'center', background: '#00d2ff' }}>
-                        <Download size={18} /> Download PDF Report (Agent 7)
-                    </button>
-
-                    <button className="option-btn" onClick={() => {
-                        setGroupReports([]);
-                        setState('upload');
-                    }} style={{ margin: '0 auto', justifyContent: 'center', border: 'none' }}>
-                        Start New Session
-                    </button>
-                </div>
-            )}
+                )}
         </div>
     );
 };

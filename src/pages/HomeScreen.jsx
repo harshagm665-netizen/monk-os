@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
-import { Settings, Maximize, Cpu, Zap, ScanFace, Smile, Mic, FileQuestion, Wand2 } from 'lucide-react';
+import { Settings, Maximize, Cpu, Zap, ScanFace, Smile, Mic, FileQuestion, Wand2, Gamepad2, Calculator, Timer, Palette, Bot, Smartphone, Music, Folder } from 'lucide-react';
 import Window from '../components/Window';
 import FaceRecApp from '../components/apps/FaceRecApp';
 import EmotionApp from '../components/apps/EmotionApp';
 import MonkAIApp from '../components/apps/MonkAIApp';
 import MultimodalApp from '../components/apps/MultimodalApp';
 import SmartKillerApp from '../components/apps/SmartKillerApp';
+import TicTacToeApp from '../components/apps/TicTacToeApp';
+import MathWizardApp from '../components/apps/MathWizardApp';
+import FocusTimerApp from '../components/apps/FocusTimerApp';
+import AirDrawApp from '../components/apps/AirDrawApp';
+import RobotControlApp from '../components/apps/RobotControlApp';
+import MobileSetupApp from '../components/apps/MobileSetupApp';
+import RhymesApp from '../components/apps/RhymesApp';
+import MyFilesApp from '../components/apps/MyFilesApp';
 import './HomeScreen.css';
 
 const HomeScreen = () => {
@@ -14,7 +22,15 @@ const HomeScreen = () => {
         emotion: false,
         monkAi: false,
         multimodal: false,
-        smartKiller: false
+        smartKiller: false,
+        ticTacToe: false,
+        mathWizard: false,
+        focusTimer: false,
+        airDraw: false,
+        robotControl: false,
+        mobileSetup: false,
+        rhymes: false,
+        myFiles: false
     });
 
     const toggleApp = (appKey) => {
@@ -62,6 +78,54 @@ const HomeScreen = () => {
                     <div className="icon-wrapper wand"><Wand2 size={32} /></div>
                     <span>Smart Killer AI</span>
                 </div>
+                <div className="app-icon" onClick={() => toggleApp('ticTacToe')}>
+                    <div className="icon-wrapper" style={{ borderColor: 'rgba(0, 255, 204, 0.4)', color: '#00ffcc' }}>
+                        <Gamepad2 size={32} />
+                    </div>
+                    <span>Tic Tac Toe</span>
+                </div>
+                <div className="app-icon" onClick={() => toggleApp('mathWizard')}>
+                    <div className="icon-wrapper wand">
+                        <Calculator size={32} />
+                    </div>
+                    <span>Math Wizard</span>
+                </div>
+                <div className="app-icon" onClick={() => toggleApp('focusTimer')}>
+                    <div className="icon-wrapper" style={{ borderColor: 'rgba(255, 204, 0, 0.4)', color: '#ffcc00' }}>
+                        <Timer size={32} />
+                    </div>
+                    <span>Focus Timer</span>
+                </div>
+                <div className="app-icon" onClick={() => toggleApp('airDraw')}>
+                    <div className="icon-wrapper" style={{ borderColor: 'rgba(255, 51, 102, 0.4)', color: '#ff3366' }}>
+                        <Palette size={32} />
+                    </div>
+                    <span>Air Draw</span>
+                </div>
+                <div className="app-icon" onClick={() => toggleApp('robotControl')}>
+                    <div className="icon-wrapper" style={{ borderColor: 'rgba(0, 255, 204, 0.4)', color: '#00ffcc', boxShadow: '0 0 15px rgba(0, 255, 204, 0.3)' }}>
+                        <Bot size={32} />
+                    </div>
+                    <span>Robot OS</span>
+                </div>
+                <div className="app-icon" onClick={() => toggleApp('mobileSetup')}>
+                    <div className="icon-wrapper" style={{ borderColor: 'rgba(255, 255, 255, 0.2)', color: '#fff' }}>
+                        <Smartphone size={32} />
+                    </div>
+                    <span>Mobile Sync</span>
+                </div>
+                <div className="app-icon" onClick={() => toggleApp('rhymes')}>
+                    <div className="icon-wrapper" style={{ borderColor: 'rgba(255, 215, 0, 0.4)', color: '#ffd700', boxShadow: '0 0 15px rgba(255, 215, 0, 0.2)' }}>
+                        <Music size={32} />
+                    </div>
+                    <span>Interactive Rhymes</span>
+                </div>
+                <div className="app-icon" onClick={() => toggleApp('myFiles')}>
+                    <div className="icon-wrapper" style={{ borderColor: 'rgba(59, 130, 246, 0.4)', color: '#3b82f6', boxShadow: '0 0 15px rgba(59, 130, 246, 0.2)' }}>
+                        <Folder size={32} />
+                    </div>
+                    <span>My Files</span>
+                </div>
             </main>
 
             {/* OS Windows Rendering */}
@@ -92,7 +156,7 @@ const HomeScreen = () => {
                 icon={Mic}
                 width={500} height={600}
             >
-                <MonkAIApp />
+                <MonkAIApp onClose={() => toggleApp('monkAi')} />
             </Window>
 
             <Window
@@ -102,7 +166,7 @@ const HomeScreen = () => {
                 icon={FileQuestion}
                 width={800} height={500}
             >
-                <MultimodalApp />
+                <MultimodalApp onClose={() => toggleApp('multimodal')} />
             </Window>
 
             <Window
@@ -112,7 +176,87 @@ const HomeScreen = () => {
                 icon={Wand2}
                 width={800} height={500}
             >
-                <SmartKillerApp />
+                <SmartKillerApp onClose={() => toggleApp('smartKiller')} />
+            </Window>
+
+            <Window
+                title="Tic-Tac-Toe AI"
+                isOpen={openApps.ticTacToe}
+                onClose={() => toggleApp('ticTacToe')}
+                icon={Gamepad2}
+                width={450} height={600}
+            >
+                <TicTacToeApp onClose={() => toggleApp('ticTacToe')} />
+            </Window>
+
+            <Window
+                title="Math Wizard (Vision AI)"
+                isOpen={openApps.mathWizard}
+                onClose={() => toggleApp('mathWizard')}
+                icon={Calculator}
+                width={700} height={550}
+            >
+                <MathWizardApp onClose={() => toggleApp('mathWizard')} />
+            </Window>
+
+            <Window
+                title="Focus Timer (Face Tracked)"
+                isOpen={openApps.focusTimer}
+                onClose={() => toggleApp('focusTimer')}
+                icon={Timer}
+                width={400} height={500}
+            >
+                <FocusTimerApp onClose={() => toggleApp('focusTimer')} />
+            </Window>
+
+            <Window
+                title="Air Draw (AI Hand Tracking)"
+                isOpen={openApps.airDraw}
+                onClose={() => toggleApp('airDraw')}
+                icon={Palette}
+                width={800} height={600}
+            >
+                <AirDrawApp onClose={() => toggleApp('airDraw')} />
+            </Window>
+
+            <Window
+                title="Monk Robot Link (Kinematics)"
+                isOpen={openApps.robotControl}
+                onClose={() => toggleApp('robotControl')}
+                icon={Bot}
+                width={750} height={550}
+            >
+                <RobotControlApp onClose={() => toggleApp('robotControl')} />
+            </Window>
+
+            <Window
+                title="Monk Mobile Setup & Sync"
+                isOpen={openApps.mobileSetup}
+                onClose={() => toggleApp('mobileSetup')}
+                icon={Smartphone}
+                width={700} height={450}
+            >
+                <MobileSetupApp onClose={() => toggleApp('mobileSetup')} />
+            </Window>
+
+            <Window
+                title="Interactive Video Rhymes"
+                isOpen={openApps.rhymes}
+                onClose={() => toggleApp('rhymes')}
+                icon={Music}
+                width={900} height={600}
+            >
+                <RhymesApp onClose={() => toggleApp('rhymes')} />
+            </Window>
+
+            <Window
+                title="Monk OS Native File Explorer"
+                isOpen={openApps.myFiles}
+                onClose={() => toggleApp('myFiles')}
+                icon={Folder}
+                width={850} height={600}
+            >
+                <MyFilesApp onClose={() => toggleApp('myFiles')} />
             </Window>
 
             {/* Background Ambience */}

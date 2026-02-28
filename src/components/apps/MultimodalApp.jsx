@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, FileText, ImageIcon, Loader, Send, X, Brain, Sparkles, Database, Zap, ChevronRight } from 'lucide-react';
+import { Upload, FileText, ImageIcon, Loader, Send, X, Brain, Sparkles, Database, Zap, ChevronRight, ArrowLeft } from 'lucide-react';
 
 const API = 'http://127.0.0.1:8000/api/rag';
 
@@ -221,7 +221,7 @@ const FormatText = ({ text }) => {
 };
 
 /* ─── Main Component ─────────────────────────────────────────────────── */
-const MultimodalApp = () => {
+const MultimodalApp = ({ onClose }) => {
     const [file, setFile] = useState(null);
     const [sessionId, setSessionId] = useState(null);
     const [uploadStatus, setUploadStatus] = useState('idle'); // idle|uploading|ready|error
@@ -261,6 +261,14 @@ const MultimodalApp = () => {
       .rag-upload:hover { border-color: rgba(0,245,255,0.6) !important; background: rgba(0,245,255,0.07) !important; }
       .rag-input:focus { border-color: rgba(0,245,255,0.5) !important; box-shadow: 0 0 0 2px rgba(0,245,255,0.08); }
       .rag-send:hover { box-shadow: 0 4px 20px rgba(0,245,255,0.3); transform: scale(1.05); }
+
+      /* Mobile Layout Overrides */
+      @media (max-width: 768px) {
+        .multimodal-root { flex-direction: column !important; overflow-y: auto !important; }
+        .multimodal-left { width: 100% !important; flex: 0 0 auto !important; border-right: none !important; border-bottom: 1px solid rgba(0, 245, 255, 0.12) !important; padding: 10px !important; }
+        .multimodal-right { width: 100% !important; flex: 1 1 auto !important; min-height: 400px !important; }
+        .rag-upload { min-height: 80px !important; padding: 8px !important; }
+      }
     `;
         document.head.appendChild(style);
         return () => document.head.removeChild(style);
@@ -350,9 +358,14 @@ const MultimodalApp = () => {
 
     /* ─── Render ──────────────────────────────────────────────────────── */
     return (
-        <div style={S.root}>
+        <div style={S.root} className="multimodal-root">
+            {onClose && (
+                <button className="app-internal-back-btn" onClick={onClose} title="Go Back">
+                    <ArrowLeft size={20} />
+                </button>
+            )}
             {/* ── Left Sidebar ──────────────────────────── */}
-            <div style={S.left}>
+            <div style={S.left} className="multimodal-left">
                 <p style={S.panelTitle}>Knowledge Source</p>
 
                 {/* Upload zone */}
@@ -460,7 +473,7 @@ const MultimodalApp = () => {
             </div>
 
             {/* ── Right Chat Panel ──────────────────────── */}
-            <div style={S.right}>
+            <div style={S.right} className="multimodal-right">
                 {/* Header */}
                 <div style={S.chatHeader}>
                     <div style={S.avatar(C.cyan)}>

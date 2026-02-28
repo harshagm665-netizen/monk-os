@@ -1,10 +1,13 @@
 import os, base64, time
+from dotenv import load_dotenv
+
+load_dotenv()
 import groq
 from PIL import Image as PILImage
 import io
 
 GROQ_KEY = os.getenv("GROQ_API_KEY")
-GROQ_VISION_MODEL = "llama-3.2-11b-vision-preview"
+GROQ_VISION_MODEL = "meta-llama/llama-4-maverick-17b-128e-instruct"
 
 def test_vision():
     # Make a dummy 500x500 red image to test

@@ -1,0 +1,195 @@
+.focus-timer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    background: radial-gradient(circle at center, rgba(15, 20, 30, 0.9) 0%, #000 100%);
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+.ft-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.ft-header h2 {
+    font-size: 2.2rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    color: #ffcc00;
+    text-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+}
+
+.ft-header p {
+    color: #aaa;
+    margin-top: 5px;
+}
+
+.inline-icon {
+    filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.8));
+}
+
+.ft-ring-wrapper {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 40px;
+    border-radius: 50%;
+    transition: all 0.5s ease;
+}
+
+.pulse-warning {
+    animation: criticalPulse 1s infinite alternate;
+}
+
+@keyframes criticalPulse {
+    from {
+        box-shadow: 0 0 20px rgba(255, 51, 102, 0);
+    }
+
+    to {
+        box-shadow: 0 0 50px rgba(255, 51, 102, 0.6);
+    }
+}
+
+.ft-ring {
+    transform: rotate(-90deg);
+    /* Start at 12 o'clock */
+    overflow: visible;
+}
+
+.ft-ring-bg {
+    fill: transparent;
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 15px;
+}
+
+.ft-ring-progress {
+    fill: transparent;
+    stroke: #ffcc00;
+    stroke-width: 15px;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+    filter: drop-shadow(0 0 10px rgba(255, 204, 0, 0.6));
+}
+
+/* If pausing because away, change ring color */
+.pulse-warning .ft-ring-progress {
+    stroke: #ff3366;
+    filter: drop-shadow(0 0 15px #ff3366);
+}
+
+.ft-time-display {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ft-time-display h1 {
+    font-size: 4rem;
+    font-family: inherit;
+    /* Use Inter for clean numbers */
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 2px;
+    line-height: 1;
+}
+
+.ft-status-pill {
+    margin-top: 15px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+}
+
+.ft-status-pill.paused {
+    background: rgba(255, 255, 255, 0.1);
+    color: #888;
+}
+
+.ft-status-pill.focusing {
+    background: rgba(0, 255, 204, 0.15);
+    color: #00ffcc;
+    border: 1px solid rgba(0, 255, 204, 0.3);
+}
+
+.ft-status-pill.away {
+    background: rgba(255, 51, 102, 0.2);
+    color: #ff3366;
+    border: 1px solid rgba(255, 51, 102, 0.5);
+    animation: flashText 1s infinite alternate;
+}
+
+@keyframes flashText {
+    from {
+        opacity: 0.5;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.ft-controls {
+    display: flex;
+    gap: 20px;
+}
+
+.ft-btn {
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1.5), box-shadow 0.2s;
+}
+
+.ft-btn:active {
+    transform: scale(0.9);
+}
+
+.ft-btn.primary {
+    width: 70px;
+    height: 70px;
+}
+
+.ft-btn.primary.play {
+    background: linear-gradient(135deg, #00ffcc, #00ccff);
+    color: #000;
+    box-shadow: 0 10px 25px rgba(0, 255, 204, 0.3);
+}
+
+.ft-btn.primary.pause {
+    background: linear-gradient(135deg, #ffcc00, #ffaa00);
+    color: #000;
+    box-shadow: 0 10px 25px rgba(255, 204, 0, 0.3);
+}
+
+.ft-btn.secondary {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ccc;
+}
+
+.ft-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}

@@ -1,0 +1,355 @@
+.math-wizard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100%;
+    width: 100%;
+    background: radial-gradient(circle at top, rgba(157, 78, 221, 0.2) 0%, rgba(10, 10, 15, 1) 100%);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    padding: 30px;
+    position: relative;
+    overflow-y: auto;
+}
+
+.mw-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.mw-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    color: #e0aaff;
+    text-shadow: 0 0 15px rgba(157, 78, 221, 0.6);
+}
+
+.mw-header p {
+    color: #aaa;
+    margin-top: 10px;
+}
+
+.mw-camera-stage {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    background: #000;
+    border-radius: 20px;
+    border: 2px solid rgba(157, 78, 221, 0.4);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(157, 78, 221, 0.2);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    min-height: 300px;
+}
+
+.mw-video-feed,
+.mw-captured-image {
+    width: 100%;
+    height: auto;
+    max-height: 450px;
+    object-fit: contain;
+    border-radius: 18px;
+    transition: opacity 0.5s ease;
+}
+
+.hidden {
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+/* Cyber Scanning Line */
+.mw-scanner-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #00ffcc;
+    box-shadow: 0 0 15px 5px #00ffcc;
+    animation: scan 2s linear infinite;
+    z-index: 10;
+}
+
+@keyframes scan {
+    0% {
+        top: 0%;
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+.mw-controls {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.mw-magic-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 15px 40px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1.5);
+}
+
+.mw-magic-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.capture-mode {
+    background: linear-gradient(135deg, #9d4edd, #e0aaff);
+    color: #1a0033;
+    box-shadow: 0 10px 25px rgba(157, 78, 221, 0.4);
+}
+
+.capture-mode:hover:not(:disabled) {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(157, 78, 221, 0.6);
+}
+
+.capture-mode:disabled {
+    background: #333;
+    color: #666;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.retry-mode {
+    background: transparent;
+    border: 2px solid #555;
+    color: #ccc;
+}
+
+.retry-mode:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-color: #888;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mode Toggle */
+.mw-mode-toggle {
+    display: inline-flex;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(157, 78, 221, 0.3);
+    border-radius: 20px;
+    padding: 4px;
+    margin: 15px 0;
+}
+
+.mw-mode-toggle button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    color: #aaa;
+    padding: 8px 16px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mw-mode-toggle button:hover {
+    color: #fff;
+}
+
+.mw-mode-toggle button.active {
+    background: rgba(157, 78, 221, 0.8);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
+}
+
+/* Quiz Banner */
+.mw-quiz-banner {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.mw-active-question {
+    background: rgba(0, 255, 204, 0.1);
+    border: 1px solid rgba(0, 255, 204, 0.3);
+    border-radius: 12px;
+    padding: 15px 30px;
+    text-align: center;
+    width: 100%;
+    box-shadow: inset 0 0 20px rgba(0, 255, 204, 0.05);
+}
+
+.mw-active-question h3 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #00ffcc;
+    letter-spacing: 2px;
+}
+
+.mw-active-question p {
+    margin: 5px 0 0 0;
+    font-size: 0.8rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Feedback Panel */
+.mw-feedback-panel {
+    width: 100%;
+    max-width: 600px;
+    background: rgba(0, 255, 204, 0.05);
+    /* Cyan tint */
+    border: 1px solid rgba(0, 255, 204, 0.3);
+    border-radius: 16px;
+    padding: 25px;
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.scale-up {
+    animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.mw-teacher-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 204, 0.5));
+}
+
+.mw-feedback-text {
+    flex: 1;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #eef;
+    position: relative;
+}
+
+.mw-tts-btn {
+    background: transparent;
+    border: 1px solid #555;
+    color: #aaa;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s;
+    float: right;
+    margin-left: 15px;
+}
+
+.mw-tts-btn:hover {
+    color: #00ffcc;
+    border-color: #00ffcc;
+    background: rgba(0, 255, 204, 0.1);
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   MOBILE RESPONSIVENESS
+──────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .math-wizard-container {
+        padding: 50px 15px 20px 15px;
+        /* Leave room for absolute back button */
+    }
+
+    .mw-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .mw-header p {
+        font-size: 0.9rem;
+    }
+
+    .mw-camera-stage {
+        min-height: 200px;
+    }
+
+    .mw-camera-feed-container {
+        padding: 10px;
+    }
+
+    .mw-capture-btn {
+        width: 50px;
+        height: 50px;
+        bottom: 10px;
+    }
+
+    .mw-captured-image {
+        max-height: 300px;
+    }
+
+    .mw-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mw-send-btn,
+    .mw-retake-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .mw-feedback-panel {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .mw-tts-btn {
+        float: none;
+        margin: 10px auto 0;
+    }
+}

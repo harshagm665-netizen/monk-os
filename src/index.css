@@ -20,23 +20,55 @@ body {
   overflow: hidden;
 }
 
-/* Scrollbar styling for entire app */
+/* Scrollbar styling for entire app (Dark Glass) */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(10, 10, 15, 0.4);
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
+  border: 2px solid rgba(10, 10, 15, 0.4);
+  transition: all 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 204, 0.3);
+  background: rgba(0, 255, 204, 0.7);
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+}
+
+/* Global App Internal Back Button */
+.app-internal-back-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1.5);
+  backdrop-filter: blur(10px);
+}
+
+.app-internal-back-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(0, 255, 204, 0.5);
+  color: #00ffcc;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
 }
 
 /* General Input Reset */

@@ -14,17 +14,35 @@
 }
 
 .os-window {
-    background: rgba(15, 15, 15, 0.85);
+    background: rgba(15, 15, 15, 0.75);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(25px);
+    border-radius: 16px;
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.9),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2),
+        inset 0 0 20px rgba(0, 255, 204, 0.05);
+    /* Very subtle cyberpunk internal glow */
+    backdrop-filter: blur(40px);
+    /* Deep modern glass */
     display: flex;
     flex-direction: column;
     overflow: hidden;
     pointer-events: auto;
-    /* Re-enable clicks for the window itself */
-    animation: windowOpen 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Spring physics opening animation */
+    animation: windowOpen 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    transition: width 0.3s cubic-bezier(0.2, 0, 0, 1), height 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.os-window-overlay.maximized-overlay {
+    top: 0;
+    height: 100vh;
+}
+
+.os-window.maximized-window {
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0;
+    border: none;
 }
 
 .window-header {
@@ -87,13 +105,42 @@
 }
 
 @keyframes windowOpen {
-    from {
+    0% {
         opacity: 0;
-        transform: scale(0.95) translateY(10px);
+        transform: scale(0.85) translateY(20px);
+        filter: blur(10px);
     }
 
-    to {
+    100% {
         opacity: 1;
         transform: scale(1) translateY(0);
+        filter: blur(0px);
+    }
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   MOBILE RESPONSIVENESS
+──────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .os-window-overlay {
+        top: 0 !important;
+        height: 100vh !important;
+        background: rgba(0, 0, 0, 0.95);
+        /* Deeper background for mobile OS feel */
+    }
+
+    .os-window {
+        width: 100vw !important;
+        height: 100vh !important;
+        border-radius: 0 !important;
+        border: none !important;
+        transform: none !important;
+        /* Disable opening scale on mobile for performance */
+        animation: none !important;
+    }
+
+    .window-header {
+        height: 45px;
+        /* Slightly larger touch target on mobile */
     }
 }

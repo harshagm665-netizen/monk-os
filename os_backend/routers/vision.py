@@ -7,8 +7,11 @@ import uuid
 import asyncio
 import urllib.request
 import threading
+from datetime import datetime
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from database import SessionLocal, Student, Attendance
 
 router = APIRouter()
 
@@ -179,13 +182,50 @@ def _do_register(name: str, image_base64: str):
 # ──────────────────────────────────────────────
 # WebSocket: Live video feed with recognition
 # ──────────────────────────────────────────────
+
+_daily_attendance_cache = set() # Store as "YYYY-MM-DD_studentId" to prevent spamming DB
+
+def _log_attendance(db: Session, student_id: int):
+    today = datetime.now().strftime("%Y-%m-%d")
+    cache_key = f"{today}_{student_id}"
+    
+    if cache_key in _daily_attendance_cache:
+        return
+        
+    # Check DB to be safe (in case cache cleared)
+    existing = db.query(Attendance).filter(
+        Attendance.student_id == student_id,
+        Attendance.date == today
+    ).first()
+    
+    if not existing:
+        time_now = datetime.now().strftime("%H:%M:%S")
+        record = Attendance(student_id=student_id, date=today, status="Present", time=time_now)
+        db.add(record)
+        db.commit()
+        print(f"[Attendance] Successfully logged {student_id} as Present at {time_now}")
+    
+    _daily_attendance_cache.add(cache_key)
+
+# Keep track of frames for skip-framing
+_frame_counter = 0
+
 def _process_frame(data: str):
+    global _frame_counter
     try:
+        # Increment and check if we should skip heavy processing
+        _frame_counter += 1
+        if _frame_counter % 5 != 0:
+            return [] # Skip 4 out of 5 frames to save CPU heat on the Pi
+            
         img_data = base64.b64decode(data.split(",")[1])
         nparr    = np.frombuffer(img_data, np.uint8)
         frame    = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         if frame is None:
             return []
+            
+        # Downscale the frame directly to reduce LBPH computation load drastically
+        frame = cv2.resize(frame, (320, 240))
 
         boxes = get_faces(frame)
         gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -202,11 +242,33 @@ def _process_frame(data: str):
                         print(f"[Vision] predict → label={label_id} conf={confidence:.1f}")
                         if confidence < 110:          # generous threshold for varied light
                             name = label_to_name.get(label_id, "Unknown")
+                            
+                            # **NEW: Log SQLite Attendance If Detected**
+                            if name != "Unknown":
+                                db = SessionLocal()
+                                try:
+                                    # Find student by name
+                                    student = db.query(Student).filter(Student.name == name).first()
+                                    if student:
+                                        _log_attendance(db, student.id)
+                                    else:
+                                        # Auto-create phantom student in SQL if FaceRec folder had them but DB didn't
+                                        new_student = Student(name=name, grade="Auto-Enrolled")
+                                        db.add(new_student)
+                                        db.commit()
+                                        db.refresh(new_student)
+                                        _log_attendance(db, new_student.id)
+                                        
+                                finally:
+                                    db.close()
+                                    
                     except Exception as e:
                         print(f"[Vision] predict error: {e}")
 
+            # Rescale the results back up assuming a standard 640x480 frontend feed
+            # 640 / 320 = 2.0 scale multiplier
             results.append({
-                "box":     {"x": int(x), "y": int(y), "w": int(w), "h": int(h)},
+                "box":     {"x": int(x * 2), "y": int(y * 2), "w": int(w * 2), "h": int(h * 2)},
                 "name":    name,
                 "emotion": "Neutral"
             })

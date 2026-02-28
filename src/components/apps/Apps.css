@@ -368,6 +368,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+    height: 100%;
 }
 
 .upload-state,
@@ -378,6 +379,8 @@
     align-items: center;
     max-width: 400px;
     animation: fadeIn 0.5s ease;
+    flex: 1;
+    justify-content: center;
 }
 
 .upload-circle {
@@ -425,6 +428,7 @@
     max-width: 500px;
     width: 100%;
     text-align: left;
+    height: calc(100% - 40px);
 }
 
 .quiz-header {
@@ -767,4 +771,45 @@
 .chat-input-area button:disabled {
     opacity: 0.35;
     cursor: not-allowed;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   MOBILE RESPONSIVENESS (Apps)
+──────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+    /* Smart Killer App Overrides */
+    .smart-killer-app {
+        flex-direction: column !important;
+        overflow-y: auto !important;
+        padding: 60px 15px 20px 15px !important;
+    }
+
+    .upload-state,
+    .quiz-state,
+    .learning-state,
+    .results-state {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        padding: 10px !important;
+    }
+
+    input[type="text"] {
+        width: 100% !important;
+    }
+
+    /* Monk AI Overrides */
+    .ai-agent {
+        padding: 50px 15px 20px 15px !important;
+    }
+
+    .orb-container {
+        width: 150px !important;
+        height: 150px !important;
+    }
+
+    .transcript-box {
+        max-width: 100% !important;
+    }
 }

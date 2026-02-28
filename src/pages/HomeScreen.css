@@ -99,26 +99,42 @@
     height: 64px;
     background: rgba(40, 40, 40, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
+    border-radius: 18px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #fff;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(12px);
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    /* Inner glass highlight */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Bouncy spring transition */
+    transform-style: preserve-3d;
 }
 
 .app-icon:hover .icon-wrapper {
-    transform: translateY(-5px) scale(1.05);
-    background: rgba(60, 60, 60, 0.8);
-    border-color: rgba(0, 255, 204, 0.4);
-    box-shadow: 0 15px 30px rgba(0, 255, 204, 0.15);
+    transform: translateY(-8px) scale(1.08) perspective(400px) rotateX(5deg);
+    background: rgba(60, 60, 60, 0.85);
+    border-color: rgba(0, 255, 204, 0.5);
+    box-shadow:
+        0 20px 40px rgba(0, 255, 204, 0.25),
+        0 0 15px rgba(0, 255, 204, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
     color: #00ffcc;
+}
+
+/* Active "Press" Physicality */
+.app-icon:active .icon-wrapper {
+    transform: translateY(2px) scale(0.95);
+    transition: all 0.1s ease;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.6);
 }
 
 .app-icon:hover span {
     color: #fff;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.4);
 }
 
 .icon-wrapper.core {
@@ -128,15 +144,18 @@
 }
 
 .icon-wrapper.wand {
-    background: rgba(157, 78, 221, 0.1);
+    background: rgba(157, 78, 221, 0.15);
     border-color: rgba(157, 78, 221, 0.3);
-    color: #9d4edd;
+    color: #cf9fff;
 }
 
 .app-icon:hover .icon-wrapper.wand {
-    border-color: rgba(157, 78, 221, 0.6);
-    box-shadow: 0 15px 30px rgba(157, 78, 221, 0.2);
-    color: #e0aaff;
+    border-color: rgba(157, 78, 221, 0.7);
+    box-shadow:
+        0 20px 40px rgba(157, 78, 221, 0.3),
+        0 0 20px rgba(157, 78, 221, 0.15),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    color: #fff;
 }
 
 /* Ambient Background */
@@ -152,4 +171,40 @@
     background-size: 40px 40px;
     z-index: 1;
     pointer-events: none;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   MOBILE RESPONSIVENESS
+──────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .os-topbar {
+        padding: 0 10px;
+        font-size: 0.75rem;
+    }
+
+    .topbar-center {
+        display: none;
+        /* Hide date/time on very small screens to save space */
+    }
+
+    .desktop-grid {
+        padding: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        grid-auto-rows: 100px;
+        gap: 15px;
+    }
+
+    .icon-wrapper {
+        width: 52px;
+        height: 52px;
+    }
+
+    .icon-wrapper svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .app-icon span {
+        font-size: 0.75rem;
+    }
 }

@@ -1,0 +1,212 @@
+.air-draw-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ad-video-feed {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+    /* Mirror camera */
+    z-index: 1;
+    opacity: 0.8;
+    /* Dim the camera slightly to focus on drawing */
+}
+
+.ad-canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Floating Sidebars */
+.ad-sidebar {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(20, 20, 25, 0.65);
+    /* More transparent */
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 40px;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.ad-sidebar.left {
+    left: 20px;
+}
+
+.ad-sidebar.right {
+    right: 20px;
+}
+
+.sidebar-divider {
+    width: 60%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 5px 0;
+}
+
+.ad-tool-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ad-tool-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.ad-tool-btn.active {
+    background: rgba(0, 255, 204, 0.2);
+    color: #00ffcc;
+    box-shadow: inset 0 0 10px rgba(0, 255, 204, 0.5);
+    border: 1px solid rgba(0, 255, 204, 0.3);
+}
+
+.ad-tool-btn.clear-btn {
+    color: #ff3366;
+}
+
+.ad-tool-btn.clear-btn:hover {
+    background: rgba(255, 51, 102, 0.2);
+    box-shadow: inset 0 0 10px rgba(255, 51, 102, 0.5);
+    border: 1px solid rgba(255, 51, 102, 0.3);
+}
+
+.ad-air-hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8) !important;
+    filter: brightness(1.5);
+    z-index: 20;
+}
+
+.ad-color-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.ad-color-btn.active {
+    border-color: #fff;
+    transform: scale(1.2);
+    box-shadow: 0 0 10px currentColor;
+    /* Uses the background color for glow */
+}
+
+.ad-size-slider {
+    width: 100px;
+    accent-color: #00ffcc;
+    cursor: pointer;
+}
+
+.ad-size-slider.vertical {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    width: 20px;
+    height: 100px;
+    margin: 10px 0;
+}
+
+/* Hover Cursor */
+.ad-cursor {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+    z-index: 5;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+.ad-cursor.drawing {
+    background: rgba(0, 255, 204, 0.8);
+    border-color: #00ffcc;
+    transform: translate(-50%, -50%) scale(0.7);
+    box-shadow: 0 0 20px #00ffcc;
+}
+
+/* Loading Overlay */
+.ad-loading {
+    position: absolute;
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.8);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #00ffcc;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+}
+
+.ad-loading .spin {
+    margin-bottom: 20px;
+    animation: spin 2s linear infinite;
+}
+
+/* Error */
+.ad-error {
+    position: absolute;
+    z-index: 20;
+    color: #ff3366;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #ff3366;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .ad-sidebar {
+        padding: 10px 5px;
+        border-radius: 20px;
+        transform: translateY(-50%) scale(0.8);
+    }
+
+    .ad-sidebar.left {
+        left: 5px;
+    }
+
+    .ad-sidebar.right {
+        right: 5px;
+    }
+}
