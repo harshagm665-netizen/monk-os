@@ -16,7 +16,6 @@
 
 Unlike traditional robotic middleware, Monk OS strips away bloat, merging a mathematically rigorous **Python FastAPI backend** with a stunning, glassmorphic **React desktop environment**. The entire neural network pipeline, computer vision logic, and LLM inference engine execute locally on the edge, eliminating severe latency bottlenecks while maintaining absolute data privacy.
 
-![Monk OS Interface](image.png)
 
 ---
 
