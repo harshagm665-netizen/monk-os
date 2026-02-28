@@ -1,6 +1,5 @@
 <div align="center">
-  <img src="public/favicon.ico" alt="Monk OS Logo" width="120"/>
-  <h1>Monk OS</h1>
+  <h1>🤖 Monk OS</h1>
   <p><strong>The Next-Generation AI Operating System for Edge Robotics</strong></p>
   
   [![Python](https://img.shields.io/badge/Python-3.13+-blue.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org)
@@ -16,6 +15,8 @@
 **Monk OS** is an exhaustive, production-grade Artificial Intelligence operating system purposefully engineered for the Raspberry Pi 5 (and compatible edge devices). It acts as the "brain," visual interface, and kinematic controller for advanced humanoid robotics.
 
 Unlike traditional robotic middleware, Monk OS strips away bloat, merging a mathematically rigorous **Python FastAPI backend** with a stunning, glassmorphic **React desktop environment**. The entire neural network pipeline, computer vision logic, and LLM inference engine execute locally on the edge, eliminating severe latency bottlenecks while maintaining absolute data privacy.
+
+![Monk OS Interface](image.png)
 
 ---
 
